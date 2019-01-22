@@ -106,9 +106,9 @@ class Home extends React.PureComponent {
    * @memberof BestStories
    */
   render() {
-    const { newsStories } = this.state;
+    const { newsStories, currentPage } = this.state;
     const { isAuthenticated } = this.props;
-    const CHANGE_PAGE_STATE = -1;
+    const CHANGE_PAGE_STATE = 1;
 
     return (
       <React.Fragment>
@@ -118,14 +118,20 @@ class Home extends React.PureComponent {
               <ul>
                 {newsStories.map((value, index) => (
                   <div key={index}>
-                    <News news={value} index={index} newsType={this.newsType} />
+                    <News
+                      news={value}
+                      index={index}
+                      newsType={this.newsType}
+                      isAuthenticated={isAuthenticated}
+                    />
                   </div>
                 ))}
               </ul>
             </div>
             <div className="news-pagination">
               <button
-                onClick={() => this.handleUpdatae(CHANGE_PAGE_STATE)}
+                disabled={currentPage === 0 || currentPage < 0 ? true : false}
+                onClick={() => this.handleUpdatae(-CHANGE_PAGE_STATE)}
                 className="btn-floating btn-large waves-effect waves-light red previous-page"
               >
                 <i className="fas fa-chevron-left" />

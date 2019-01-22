@@ -9,6 +9,17 @@ clearfix::before {
   display: table;
 }
 
+.header-container {
+  top: 0;
+  left: 0;
+  z-index: 1;
+  position: sticky;
+}
+
+.created-date {
+  color: #4d4d4d;
+}
+
 .login-header {
   top: 20%;
   left: 50%;
@@ -20,6 +31,19 @@ clearfix::before {
   transform: translateX(-50%);
 }
 
+.child-comment {
+  padding: 0 25px;
+}
+
+.list-container .progress-bar {
+  width: 70%;
+  margin: 0 auto;
+  background-color: #ffa9ac;
+}
+
+.progress-bar .indeterminate {
+  background-color: #ed6e73;
+}
 .local-container {
   width: 100%;
 }

@@ -1,36 +1,38 @@
 import React from 'react';
+
+import CommentsChilds from './CommentsChilds';
 import * as services from '../services/hackerNews';
 
 /**
- * @class SingelNews
+ * @class Comments
  * @augments {Component}
  */
-class SingelNews extends React.Component {
+class Comments extends React.Component {
   /**
-   * Creates an instance of SingelNews.
+   * Creates an instance of Comments.
    *
    * @param {*} props
-   * @memberof SingelNews
+   * @memberof Comments
    */
   constructor(props) {
     super(props);
     this.state = {
-      comments: [],
-      errors: ''
+      errors: '',
+      comments: []
     };
-    this.apiType = 'comments';
+    this.newsType = 'comments';
   }
 
   /**
    * Api call here.
    */
   componentDidMount() {
-    const kids = this.props.history.location.state.data.news.kids;
+    const { kids } = this.props.history.location.state.data.news;
 
     if (kids) {
       kids.forEach(kid => {
         services
-          .getComments(this.apiType, kid)
+          .getNews(this.newsType, kid)
           .then(data =>
             this.setState({
               comments: [...this.state.comments, data.data]
@@ -53,18 +55,21 @@ class SingelNews extends React.Component {
       <div className="container local-container list-container">
         {comments.length !== 0 ? (
           <ul>
-            {comments.map((data, index) => (
-              <li className="comment-list" key={index}>
-                {data.text}
-              </li>
+            {comments.map(data => (
+              <CommentsChilds data={data} key={data.id} />
             ))}
           </ul>
         ) : (
-          <div> {errors}</div>
+          <React.Fragment>
+            {errors}
+            <div className="progress progress-bar">
+              <div className="indeterminate" />
+            </div>
+          </React.Fragment>
         )}
       </div>
     );
   }
 }
 
-export default SingelNews;
+export default Comments;

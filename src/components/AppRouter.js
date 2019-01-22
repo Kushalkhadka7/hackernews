@@ -6,7 +6,7 @@ import Login from './Login';
 import Header from './Header';
 import NavBar from './NavBar';
 import '../assets/css/App.css';
-import SingelNews from './SingleNews';
+import Comments from './Comments';
 import ROUTES from '../constants/routes';
 
 /**
@@ -23,9 +23,24 @@ class AppRouter extends React.Component {
     super(props);
     this.state = {
       errors: '',
-      isAuthenticated: JSON.parse(sessionStorage.getItem('isLoggedIn'))
+      isAuthenticated: false
     };
   }
+
+  /**
+   * @static
+   * @param {*} props
+   * @param {*} state
+   * @returns Changed state.
+   * @memberof AppRouter
+   */
+  static getDerivedStateFromProps(props, state) {
+    return {
+      ...state,
+      isAuthenticated: sessionStorage.getItem('isAuthenticated')
+    };
+  }
+
   /**
    * @memberof Login
    * @param {Object} dataToLogin
@@ -50,7 +65,8 @@ class AppRouter extends React.Component {
         dataAtLocalStorage.userName === dataToLogin.userName &&
         dataAtLocalStorage.password === dataToLogin.password
       ) {
-        sessionStorage.setItem('isLoggedIn', true);
+        this.setState({ isAuthenticated: true });
+        sessionStorage.setItem('isAuthenticated', true);
 
         return true;
       }
@@ -75,15 +91,16 @@ class AppRouter extends React.Component {
    */
   render() {
     const { isAuthenticated } = this.state;
+    console.log(this.state);
 
     return (
       <Router>
         <div>
           {isAuthenticated ? (
-            <React.Fragment>
+            <div className="header-container">
               <Header />
               <NavBar />
-            </React.Fragment>
+            </div>
           ) : (
             <div />
           )}
@@ -125,7 +142,7 @@ class AppRouter extends React.Component {
             <Route
               path={ROUTES.COMMENTS}
               exact
-              component={props => <SingelNews {...props} />}
+              component={props => <Comments {...props} />}
             />
           </Switch>
         </div>

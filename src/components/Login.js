@@ -41,8 +41,7 @@ class Login extends React.Component {
 
       event.target.name === 'signup'
         ? this.props.handleSignup(loginData)
-        : this.props.handleLogin(loginData) &&
-          this.props.history.push('/topstories');
+        : this.props.handleLogin(loginData);
     } else {
       this.setState({ errors: 'please check your inputs.' });
     }

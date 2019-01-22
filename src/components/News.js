@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 /**
  * @class News
@@ -11,20 +11,36 @@ class News extends React.PureComponent {
    * @memberof News
    */
   render() {
-    const { news } = this.props;
+    const { news, isAuthenticated } = this.props;
 
     return (
       <React.Fragment>
-        {news ? (
-          <Link
-            to={{ pathname: `/news/${news.id}`, state: { data: this.props } }}
-          >
-            <li>
-              <div className="card each-list">{news.title}</div>
-            </li>
-          </Link>
+        {isAuthenticated ? (
+          <React.Fragment>
+            {news ? (
+              <Link
+                to={{
+                  pathname: `/news/${news.id}`,
+                  state: { data: this.props, isAuthenticated: isAuthenticated }
+                }}
+              >
+                <li>
+                  <div className="card each-list">
+                    {news.title}
+                    <p className="created-date ">
+                      createdAt: {new Date(news.time).toLocaleString()}
+                    </p>
+                  </div>
+                </li>
+              </Link>
+            ) : (
+              <div className="progress progress-bar">
+                <div className="indeterminate" />
+              </div>
+            )}
+          </React.Fragment>
         ) : (
-          <div>loading...</div>
+          <Redirect to="/login" />
         )}
       </React.Fragment>
     );
