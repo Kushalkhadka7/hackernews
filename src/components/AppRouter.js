@@ -91,7 +91,6 @@ class AppRouter extends React.Component {
    */
   render() {
     const { isAuthenticated } = this.state;
-    console.log(this.state);
 
     return (
       <Router>

@@ -33,7 +33,7 @@ class Home extends React.PureComponent {
 
     this.isLoading = true;
     if (this.isLoading) {
-      this.newsStoriesIds = await services.getNews(this.newsType);
+      this.newsStoriesIds = await services.getNews(this.newsType, null, null);
 
       this.loadNewsFromIds();
     }
@@ -52,7 +52,11 @@ class Home extends React.PureComponent {
     const initialRenderState = this.state.currentPage * 10;
 
     for (let i = initialRenderState; i < initialRenderState + 10; i++) {
-      const newsData = services.getNews(this.newsType, this.newsStoriesIds[i]);
+      const newsData = services.getNews(
+        this.newsType,
+        this.newsStoriesIds[i],
+        null
+      );
 
       newsData
         .then(data =>

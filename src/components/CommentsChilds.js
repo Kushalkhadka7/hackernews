@@ -49,13 +49,14 @@ class CommentsChilds extends React.Component {
   render() {
     const { data } = this.props;
 
-    console.log(data);
-
     return (
       <div>
         <li className="comment-list" key={data.id}>
           {data.text}
-          <p className='created-date'> createdAt: {new Date(data.time).toLocaleString()}</p>
+          <p className="created-date">
+            {' '}
+            createdAt: {new Date(data.time).toLocaleString()}
+          </p>
         </li>
         {this.state.commentsChilds ? (
           this.state.commentsChilds.map(value => (

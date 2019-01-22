@@ -32,7 +32,7 @@ class Comments extends React.Component {
     if (kids) {
       kids.forEach(kid => {
         services
-          .getNews(this.newsType, kid)
+          .getNews(this.newsType, null, kid)
           .then(data =>
             this.setState({
               comments: [...this.state.comments, data.data]
