@@ -4,7 +4,7 @@ import axios from 'axios';
  * Base url for our api.
  */
 const http = axios.create({
-  baseURL: 'https://hacker-news.firebaseio.com/v0'
+  baseURL: process.env.REACT_APP_HACKERNEWS_API
 });
 
 export default http;
