@@ -33,9 +33,9 @@ class Comments extends React.Component {
       kids.forEach(kid => {
         services
           .getNews(this.newsType, null, kid)
-          .then(data =>
+          .then(({ data }) =>
             this.setState({
-              comments: [...this.state.comments, data.data]
+              comments: [...this.state.comments, data]
             })
           )
           .catch(error => error);
@@ -52,22 +52,24 @@ class Comments extends React.Component {
     const { comments, errors } = this.state;
 
     return (
-      <div className="container local-container list-container">
-        {comments.length !== 0 ? (
-          <ul>
-            {comments.map(data => (
-              <CommentsChilds data={data} key={data.id} />
-            ))}
-          </ul>
-        ) : (
-          <React.Fragment>
-            {errors}
-            <div className="progress progress-bar">
-              <div className="indeterminate" />
-            </div>
-          </React.Fragment>
-        )}
-      </div>
+      <React.Fragment>
+        <div className="container local-container list-container">
+          {comments.length !== 0 ? (
+            <ul>
+              {comments.map(data => (
+                <CommentsChilds data={data} key={data.id} />
+              ))}
+            </ul>
+          ) : (
+            <React.Fragment>
+              {errors}
+              <div className="progress progress-bar">
+                <div className="indeterminate" />
+              </div>
+            </React.Fragment>
+          )}
+        </div>
+      </React.Fragment>
     );
   }
 }

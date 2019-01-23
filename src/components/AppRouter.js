@@ -10,7 +10,8 @@ import Comments from './Comments';
 import ROUTES from '../constants/routes';
 
 /**
- * Handles routing in app.
+ * @class AppRouter
+ * @extends {React.Component}
  */
 class AppRouter extends React.Component {
   /**
@@ -85,12 +86,13 @@ class AppRouter extends React.Component {
       return true;
     }
   };
+
   /**
    * @returns Routes that are used in the app.
    * @memberof AppRouternewnews
    */
   render() {
-    const { isAuthenticated } = this.state;
+    const { isAuthenticated, isCommentPage } = this.state;
 
     return (
       <Router>
@@ -141,7 +143,13 @@ class AppRouter extends React.Component {
             <Route
               path={ROUTES.COMMENTS}
               exact
-              component={props => <Comments {...props} />}
+              component={props => (
+                <Comments
+                  {...props}
+                  isCommentPage={isCommentPage}
+                  goToPrevPage={this.goToPrevPage}
+                />
+              )}
             />
           </Switch>
         </div>
