@@ -8,6 +8,8 @@ import NavBar from './NavBar';
 import '../assets/css/App.css';
 import SingelNews from './SingleNews';
 import ROUTES from '../constants/routes';
+import LOGIN_CREDENTIALS from '../constants/localStorage';
+import { LOGIN_ERRORS } from '../constants/message';
 
 /**
  * Handles routing in app.
@@ -28,28 +30,29 @@ class AppRouter extends React.Component {
   }
   /**
    * @memberof Login
-   * @param {Object} dataToLogin
+   * @param {Object} loginData
    * Handles login event.
    * Validates login credentials.
    */
-  handleLogin = dataToLogin => {
-    const dataAtLocalStorage = JSON.parse(
-      localStorage.getItem('loginCredentials')
+  handleLogin = loginData => {
+    const loginCredentials = JSON.parse(
+      localStorage.getItem(LOGIN_CREDENTIALS)
     );
 
-    if (dataAtLocalStorage === 'undefined' || dataAtLocalStorage === null) {
-      this.setState({ errors: 'please sign up to login' });
+    if (!loginCredentials) {
+      this.setState({ errors: LOGIN_ERRORS.SIGNUP_ERROR });
     } else {
-      if (dataAtLocalStorage.userName !== dataToLogin.userName) {
-        this.setState({ errors: 'user name doesnt match' });
-      } else if (dataAtLocalStorage.password !== dataToLogin.password) {
+      if (loginCredentials.userName !== loginData.userName) {
+        this.setState({ errors: LOGIN_ERRORS.USERNAME_MISMATCH_ERROR });
+      } else if (loginCredentials.password !== loginData.password) {
         this.setState({
-          errors: 'password doesnt match'
+          errors: LOGIN_ERRORS.PASSWORD_MISMATCH_ERROR
         });
       } else if (
-        dataAtLocalStorage.userName === dataToLogin.userName &&
-        dataAtLocalStorage.password === dataToLogin.password
+        loginCredentials.userName === loginData.userName &&
+        loginCredentials.password === loginData.password
       ) {
+        this.setState({ isAuthenticated: true });
         sessionStorage.setItem('isLoggedIn', true);
 
         return true;
@@ -58,35 +61,35 @@ class AppRouter extends React.Component {
   };
 
   /**
-   * @param {Object} dataToBeStored
+   * @param {Object} loginData
    * @memberof AppRouter
    * Sets signup data to localstorage.
    */
-  handleSignup = dataToBeStored => {
-    if (dataToBeStored) {
-      localStorage.setItem('loginCredentials', JSON.stringify(dataToBeStored));
+  handleSignup = loginData => {
+    if (loginData) {
+      localStorage.setItem(LOGIN_CREDENTIALS, JSON.stringify(loginData));
 
       return true;
     }
   };
+
   /**
    * @returns Routes that are used in the app.
    * @memberof AppRouternewnews
    */
   render() {
-    const { isAuthenticated } = this.state;
+    const { isAuthenticated, errors } = this.state;
 
     return (
       <Router>
         <div>
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <React.Fragment>
               <Header />
               <NavBar />
             </React.Fragment>
-          ) : (
-            <div />
           )}
+          ;
           <Switch>
             <Route
               path={ROUTES.LOGINSIGNUP}
@@ -94,10 +97,10 @@ class AppRouter extends React.Component {
               component={props => (
                 <Login
                   {...props}
-                  errors={this.state.errors}
+                  errors={errors}
                   handleLogin={this.handleLogin}
                   handleSignup={this.handleSignup}
-                  isAuthenticated={this.state.isAuthenticated}
+                  isAuthenticated={isAuthenticated}
                 />
               )}
             />
@@ -105,21 +108,21 @@ class AppRouter extends React.Component {
               path={ROUTES.NEWNEWSSTORIES}
               exact
               component={props => (
-                <Home {...props} isAuthenticated={this.state.isAuthenticated} />
+                <Home {...props} isAuthenticated={isAuthenticated} />
               )}
             />
             <Route
               path={ROUTES.TOPNEWSSTORIES}
               exact
               component={props => (
-                <Home {...props} isAuthenticated={this.state.isAuthenticated} />
+                <Home {...props} isAuthenticated={isAuthenticated} />
               )}
             />
             <Route
               path={ROUTES.BESTNEWSSTORIES}
               exact
               component={props => (
-                <Home {...props} isAuthenticated={this.state.isAuthenticated} />
+                <Home {...props} isAuthenticated={isAuthenticated} />
               )}
             />
             <Route

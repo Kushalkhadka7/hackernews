@@ -18,19 +18,19 @@ class SingelNews extends React.Component {
       comments: [],
       errors: ''
     };
-    this.apiType = 'comments';
+    this.newsData = 'comments';
   }
 
   /**
    * Api call here.
    */
   componentDidMount() {
-    const kids = this.props.history.location.state.data.news.kids;
+    const kidsNews = this.props.history.location.state.data.news.kids;
 
-    if (kids) {
-      kids.forEach(kid => {
+    if (kidsNews) {
+      kidsNews.forEach(kid => {
         services
-          .getComments(this.apiType, kid)
+          .getComments(this.newsData, kid)
           .then(data =>
             this.setState({
               comments: [...this.state.comments, data.data]

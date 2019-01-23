@@ -1,6 +1,8 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 
+import ROUTES from '../constants/routes';
+import { LOGIN_ERRORS } from '../constants/message';
 /**
  * @class Login
  * @extends {React.Component}
@@ -41,10 +43,9 @@ class Login extends React.Component {
 
       event.target.name === 'signup'
         ? this.props.handleSignup(loginData)
-        : this.props.handleLogin(loginData) &&
-          this.props.history.push('/topstories');
+        : this.props.handleLogin(loginData);
     } else {
-      this.setState({ errors: 'please check your inputs.' });
+      this.setState({ errors: LOGIN_ERRORS.EMPTY_INPUT_FIELDS });
     }
   };
 
@@ -59,7 +60,7 @@ class Login extends React.Component {
     return (
       <React.Fragment>
         {isAuthenticated ? (
-          <Redirect to="/" />
+          <Redirect to={ROUTES.NEWNEWSSTORIES} />
         ) : (
           <div className="conteiner local-container">
             <div className="row form-row">
