@@ -9,6 +9,8 @@ import '../assets/css/App.css';
 import Comments from './Comments';
 import ROUTES from '../constants/routes';
 import { AuthContext } from './AuthContext';
+import { LOGIN_ERRORS } from '../constants/message';
+import LOGIN_CREDENTIALS from '../constants/localStorage';
 
 /**
  * @class AppRouter
@@ -43,24 +45,28 @@ class AppRouter extends React.Component {
   /**
    * @param {Object} dataToLogin Login Credentials.
    * @returns {boolean} Boolean value.
+   * @memberof Login
+   * @param {Object} loginData
+   * Handles login event.
+   * Validates login credentials.
    */
-  handleLogin = dataToLogin => {
-    const dataAtLocalStorage = JSON.parse(
-      localStorage.getItem('loginCredentials')
+  handleLogin = loginData => {
+    const loginCredentials = JSON.parse(
+      localStorage.getItem(LOGIN_CREDENTIALS)
     );
 
-    if (dataAtLocalStorage === 'undefined' || dataAtLocalStorage === null) {
-      this.setState({ errors: 'please sign up to login' });
+    if (!loginCredentials) {
+      this.setState({ errors: LOGIN_ERRORS.SIGNUP_ERROR });
     } else {
-      if (dataAtLocalStorage.userName !== dataToLogin.userName) {
-        this.setState({ errors: 'user name doesnt match' });
-      } else if (dataAtLocalStorage.password !== dataToLogin.password) {
+      if (loginCredentials.userName !== loginData.userName) {
+        this.setState({ errors: LOGIN_ERRORS.USERNAME_MISMATCH_ERROR });
+      } else if (loginCredentials.password !== loginData.password) {
         this.setState({
-          errors: 'password doesnt match'
+          errors: LOGIN_ERRORS.PASSWORD_MISMATCH_ERROR
         });
       } else if (
-        dataAtLocalStorage.userName === dataToLogin.userName &&
-        dataAtLocalStorage.password === dataToLogin.password
+        loginCredentials.userName === loginData.userName &&
+        loginCredentials.password === loginData.password
       ) {
         this.setState({ isAuthenticated: true });
         sessionStorage.setItem('isAuthenticated', true);
@@ -71,14 +77,14 @@ class AppRouter extends React.Component {
   };
 
   /**
-   * @param {*} dataToBeStored
+   * @param {Object} loginData
    * @memberof AppRouter
    * @returns Boolean value.
    * Sets signup data to localstorage.
    */
-  handleSignup = dataToBeStored => {
-    if (dataToBeStored) {
-      localStorage.setItem('loginCredentials', JSON.stringify(dataToBeStored));
+  handleSignup = loginData => {
+    if (loginData) {
+      localStorage.setItem(LOGIN_CREDENTIALS, JSON.stringify(loginData));
 
       return true;
     }
@@ -89,7 +95,8 @@ class AppRouter extends React.Component {
    * @memberof AppRouternewnews
    */
   render() {
-    const { isAuthenticated } = this.state;
+    const { isAuthenticated, errors } = this.state;
+
     return (
       <AuthContext.Provider
         value={{
@@ -101,56 +108,55 @@ class AppRouter extends React.Component {
       >
         <Router>
           <div>
-            {isAuthenticated ? (
-              <div className="header-container">
+            {isAuthenticated && (
+              <React.Fragment>
                 <Header />
                 <NavBar />
-              </div>
-            ) : (
-              <div />
+              </React.Fragment>
             )}
             <Switch>
               <Route
                 path={ROUTES.LOGINSIGNUP}
                 exact
-                component={props => <Login {...props} />}
+                component={props => (
+                  <Login
+                    {...props}
+                    errors={errors}
+                    handleLogin={this.handleLogin}
+                    handleSignup={this.handleSignup}
+                    isAuthenticated={isAuthenticated}
+                  />
+                )}
               />
               <Route
                 path={ROUTES.NEWNEWSSTORIES}
                 exact
-                component={props => <Home {...props} />}
+                component={props => (
+                  <Home {...props} isAuthenticated={isAuthenticated} />
+                )}
               />
               <Route
                 path={ROUTES.TOPNEWSSTORIES}
                 exact
                 component={props => (
-                  <Home
-                    {...props}
-                    isAuthenticated={this.state.isAuthenticated}
-                  />
+                  <Home {...props} isAuthenticated={isAuthenticated} />
                 )}
               />
               <Route
                 path={ROUTES.BESTNEWSSTORIES}
                 exact
                 component={props => (
-                  <Home
-                    {...props}
-                    isAuthenticated={this.state.isAuthenticated}
-                  />
+                  <Home {...props} isAuthenticated={isAuthenticated} />
                 )}
               />
               <Route
                 path={ROUTES.COMMENTS}
                 exact
-                component={props => (
-                  <Comments {...props} goToPrevPage={this.goToPrevPage} />
-                )}
+                component={props => <Comments {...props} />}
               />
             </Switch>
           </div>
         </Router>
-        >
       </AuthContext.Provider>
     );
   }

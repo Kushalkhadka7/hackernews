@@ -1,41 +1,45 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
+import ROUTES from '../constants/routes';
+
+const navigationLinks = [
+  {
+    to: ROUTES.NEWNEWSSTORIES,
+    name: 'New Stories'
+  },
+  {
+    to: ROUTES.BESTNEWSSTORIES,
+    name: 'Best Stories'
+  },
+  {
+    to: ROUTES.TOPNEWSSTORIES,
+    name: 'Top Stories'
+  }
+];
+
 /**
  * Returns nav component.
  */
-const NavBar = () => {
-  /**
-   * @returns
-   * @memberof NavBar
-   */
-  return (
-    <div className="container local-container">
-      <nav className="nav-extended">
-        <div className="nav-content">
-          <ul className="tabs tabs-transparent">
-            <NavLink to="/" className="tab nav-tabs" activeClassName="active">
-              NewStories
-            </NavLink>
+const NavBar = () => (
+  <div className="container local-container">
+    <nav className="nav-extended">
+      <div className="nav-content">
+        <ul className="tabs tabs-transparent">
+          {navigationLinks.map(navigationLink => (
             <NavLink
-              to="/topstories"
-              className="tab nav-tabs"
               activeClassName="active"
-            >
-              TopStories
-            </NavLink>
-            <NavLink
-              to="/beststories"
               className="tab nav-tabs"
-              activeClassName="active"
+              to={navigationLink.to}
+              key={navigationLink.to}
             >
-              BestStories
+              {navigationLink.name}
             </NavLink>
-          </ul>
-        </div>
-      </nav>
-    </div>
-  );
-};
+          ))}
+        </ul>
+      </div>
+    </nav>
+  </div>
+);
 
 export default NavBar;

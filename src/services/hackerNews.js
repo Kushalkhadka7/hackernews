@@ -23,22 +23,22 @@ export async function getNews(newsType, newsId = null, commentId = null) {
 
     return Promise.resolve(newsData);
   }
-}
 
-/**
- * @param {String} newsType
- */
-const matchNewsTypeToUrl = newsType => {
-  switch (newsType) {
-    case 'newnews':
-      return API.NEWSTORIES;
-    case 'topnews':
-      return API.TOPSTORIES;
-    case 'bestnews':
-      return API.BESTSTORIES;
-    case 'comments':
-      return API.COMMENTS;
-    default:
-      return API.NEWSTORIES;
-  }
-};
+  /**
+   * @param {String} newsType
+   */
+  const matchNewsTypeToUrl = newsType => {
+    switch (newsType) {
+      case 'newnews':
+        return API.NEWSTORIES;
+      case 'topnews':
+        return API.TOPSTORIES;
+      case 'bestnews':
+        return API.BESTSTORIES;
+      case 'comments':
+        return API.COMMENTS;
+      default:
+        return API.NEWSTORIES;
+    }
+  };
+}

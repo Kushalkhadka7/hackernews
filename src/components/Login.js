@@ -1,8 +1,10 @@
-import React from "react";
-import { Redirect } from "react-router-dom";
+import React from 'react';
+import { Redirect } from 'react-router-dom';
 
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from './AuthContext';
 
+import ROUTES from '../constants/routes';
+import { LOGIN_ERRORS } from '../constants/message';
 /**
  * @class Login
  * @extends {React.Component}
@@ -16,7 +18,7 @@ class Login extends React.Component {
    */
   constructor(props) {
     super(props);
-    this.state = { errors: "", password: "", userName: "" };
+    this.state = { errors: '', password: '', userName: '' };
   }
 
   /**
@@ -39,14 +41,14 @@ class Login extends React.Component {
     event.preventDefault();
     const { userName, password } = this.state;
 
-    if (userName !== "" && password !== "") {
+    if (userName !== '' && password !== '') {
       const loginData = { userName: userName, password: password };
 
-      event.target.name === "signup"
+      event.target.name === 'signup'
         ? this.context.handleSignup(loginData)
         : this.context.handleLogin(loginData);
     } else {
-      this.setState({ errors: "please check your inputs." });
+      this.setState({ errors: LOGIN_ERRORS.EMPTY_INPUT_FIELDS });
     }
   };
 
@@ -61,7 +63,7 @@ class Login extends React.Component {
     return (
       <React.Fragment>
         {isAuthenticated ? (
-          <Redirect to="/" />
+          <Redirect to={ROUTES.NEWNEWSSTORIES} />
         ) : (
           <div className="conteiner local-container">
             <div className="row form-row">

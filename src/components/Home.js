@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 
 import News from './News';
 import { AuthContext } from './AuthContext';
+import ROUTES from '../constants/routes';
 import * as services from '../services/hackerNews';
 
 /**
@@ -17,12 +18,23 @@ class Home extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      newsType: '',
+      NEXT_PAGE: 1,
       currentPage: 0,
-      newsStories: []
+      newsStories: [],
+      isLoading: false,
+      NEWS_PER_PAGE: 10,
+      PREVIOUS_PAGE: -1,
+      newsStoriesIds: []
     };
-    this.newsType = '';
-    this.isLoading = false;
-    this.newsStoriesIds = [];
+  }
+
+  /**
+   * @memberof Home
+   * Calls fetchNewsStories to fetch news data from api.
+   */
+  componentDidMount() {
+    this.fetchNewsStories();
   }
 
   /**
@@ -30,16 +42,18 @@ class Home extends React.PureComponent {
    * Fetch news from api.
    * Pass the data from api to function setDataToState.
    */
-  async componentDidMount() {
-    this.newsType = await this.checkRoutes();
+  fetchNewsStories = async () => {
+    const newsType = await this.checkRoutes();
 
-    this.isLoading = true;
-    if (this.isLoading) {
-      this.newsStoriesIds = await services.getNews(this.newsType, null, null);
+    this.setState({ newsType, isLoading: true });
 
+    if (this.state.isLoading) {
+      const newsStoriesIds = await services.getNews(this.state.newsType);
+
+      this.setState({ newsStoriesIds });
       this.loadNewsFromIds();
     }
-  }
+  };
 
   /**
    * Loads news headlines using the ids that have been fetched in first api call.
@@ -48,22 +62,27 @@ class Home extends React.PureComponent {
    * @memberof Home
    */
   loadNewsFromIds = () => {
+    const { NEWS_PER_PAGE, currentPage } = this.state;
+
     this.setState({
       newsStories: []
     });
-    const initialRenderState = this.state.currentPage * 10;
+    const initialRenderState = currentPage * NEWS_PER_PAGE;
 
-    for (let i = initialRenderState; i < initialRenderState + 10; i++) {
+    for (
+      let i = initialRenderState;
+      i < initialRenderState + NEWS_PER_PAGE;
+      i++
+    ) {
       const newsData = services.getNews(
-        this.newsType,
-        this.newsStoriesIds[i],
-        null
+        this.state.newsType,
+        this.state.newsStoriesIds[i]
       );
 
       newsData
-        .then(data =>
+        .then(({ data }) =>
           this.setState({
-            newsStories: [...this.state.newsStories, data.data]
+            newsStories: [...this.state.newsStories, data]
           })
         )
         .catch(error => error);
@@ -80,11 +99,11 @@ class Home extends React.PureComponent {
     const { pathname } = this.props.location;
 
     switch (pathname) {
-      case '/':
+      case ROUTES.NEWNEWSSTORIES:
         return 'newnews';
-      case '/topstories':
+      case ROUTES.TOPNEWSSTORIES:
         return 'topnews';
-      case '/beststories':
+      case ROUTES.BESTNEWSSTORIES:
         return 'bestnews';
       default:
         return 'newnews';
@@ -95,7 +114,7 @@ class Home extends React.PureComponent {
    * @memberof Home
    */
   componentWillUnmount() {
-    this.isLoading = false;
+    this.setState({ isLoading: false });
   }
 
   /**
@@ -112,9 +131,8 @@ class Home extends React.PureComponent {
    * @memberof BestStories
    */
   render() {
-    const { newsStories, currentPage } = this.state;
+    const { newsStories, NEXT_PAGE, PREVIOUS_PAGE, currentPage } = this.state;
     const { isAuthenticated } = this.context;
-    const CHANGE_PAGE_STATE = 1;
 
     return (
       <React.Fragment>
@@ -127,8 +145,8 @@ class Home extends React.PureComponent {
                     <News
                       news={value}
                       index={index}
-                      newsType={this.newsType}
                       isAuthenticated={isAuthenticated}
+                      newsType={this.state.newsType}
                     />
                   </div>
                 ))}
@@ -137,13 +155,13 @@ class Home extends React.PureComponent {
             <div className="news-pagination">
               <button
                 disabled={currentPage === 0 || currentPage < 0 ? true : false}
-                onClick={() => this.handleUpdatae(-CHANGE_PAGE_STATE)}
+                onClick={() => this.handleUpdatae(NEXT_PAGE)}
                 className="btn-floating btn-large waves-effect waves-light red previous-page"
               >
                 <i className="fas fa-chevron-left" />
               </button>
               <button
-                onClick={() => this.handleUpdatae(CHANGE_PAGE_STATE)}
+                onClick={() => this.handleUpdatae(PREVIOUS_PAGE)}
                 className="btn-floating btn-large waves-effect waves-light red next-page"
               >
                 <i className="fas fa-chevron-right" />
@@ -151,7 +169,7 @@ class Home extends React.PureComponent {
             </div>
           </React.Fragment>
         ) : (
-          <Redirect to="/login" />
+          <Redirect to={ROUTES.LOGINSIGNUP} />
         )}
       </React.Fragment>
     );
