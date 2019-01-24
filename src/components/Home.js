@@ -2,6 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 
 import News from './News';
+import { AuthContext } from './AuthContext';
 import * as services from '../services/hackerNews';
 
 /**
@@ -9,6 +10,7 @@ import * as services from '../services/hackerNews';
  * @extends {React.PureComponent}
  */
 class Home extends React.PureComponent {
+  static contextType = AuthContext;
   /**
    * @param {*} props
    */
@@ -111,7 +113,7 @@ class Home extends React.PureComponent {
    */
   render() {
     const { newsStories, currentPage } = this.state;
-    const { isAuthenticated } = this.props;
+    const { isAuthenticated } = this.context;
     const CHANGE_PAGE_STATE = 1;
 
     return (

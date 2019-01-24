@@ -1,5 +1,7 @@
-import React from 'react';
-import { Redirect } from 'react-router-dom';
+import React from "react";
+import { Redirect } from "react-router-dom";
+
+import { AuthContext } from "./AuthContext";
 
 /**
  * @class Login
@@ -8,12 +10,13 @@ import { Redirect } from 'react-router-dom';
  * @param {Object} event
  */
 class Login extends React.Component {
+  static contextType = AuthContext;
   /**
    * @param {*} props
    */
   constructor(props) {
     super(props);
-    this.state = { errors: '', password: '', userName: '' };
+    this.state = { errors: "", password: "", userName: "" };
   }
 
   /**
@@ -36,14 +39,14 @@ class Login extends React.Component {
     event.preventDefault();
     const { userName, password } = this.state;
 
-    if (userName !== '' && password !== '') {
+    if (userName !== "" && password !== "") {
       const loginData = { userName: userName, password: password };
 
-      event.target.name === 'signup'
-        ? this.props.handleSignup(loginData)
-        : this.props.handleLogin(loginData);
+      event.target.name === "signup"
+        ? this.context.handleSignup(loginData)
+        : this.context.handleLogin(loginData);
     } else {
-      this.setState({ errors: 'please check your inputs.' });
+      this.setState({ errors: "please check your inputs." });
     }
   };
 
@@ -53,7 +56,7 @@ class Login extends React.Component {
    */
   render() {
     const stateErrors = this.state.errors;
-    const { isAuthenticated, errors } = this.props;
+    const { isAuthenticated, errors } = this.context;
 
     return (
       <React.Fragment>
@@ -105,7 +108,7 @@ class Login extends React.Component {
                   />
                 </div>
               </form>
-              <div className="invalid errors"> {stateErrors || errors}</div>
+              <div className="invalid errors">{stateErrors || errors}</div>
             </div>
           </div>
         )}

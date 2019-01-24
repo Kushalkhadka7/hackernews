@@ -16,7 +16,10 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": ["react-app","eslint-config-leapfrog"]
+    "extends": [
+      "react-app",
+      "eslint-config-leapfrog"
+    ]
   },
   "browserslist": [
     ">0.2%",

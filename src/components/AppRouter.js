@@ -3,11 +3,12 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import Home from './Home';
 import Login from './Login';
-import Header from './Header';
 import NavBar from './NavBar';
+import Header from './Header';
 import '../assets/css/App.css';
 import Comments from './Comments';
 import ROUTES from '../constants/routes';
+import { AuthContext } from './AuthContext';
 
 /**
  * @class AppRouter
@@ -17,8 +18,7 @@ class AppRouter extends React.Component {
   /**
    * Creates an instance of AppRouter.
    *
-   * @param {*} props
-   * @memberof AppRouter
+   * @param {any} props
    */
   constructor(props) {
     super(props);
@@ -29,11 +29,9 @@ class AppRouter extends React.Component {
   }
 
   /**
-   * @static
-   * @param {*} props
-   * @param {*} state
-   * @returns Changed state.
-   * @memberof AppRouter
+   * @param {*} props Data from parent component.
+   * @param {*} state Current state of the component.
+   * @returns {number} The sum of the two numbers.
    */
   static getDerivedStateFromProps(props, state) {
     return {
@@ -43,10 +41,8 @@ class AppRouter extends React.Component {
   }
 
   /**
-   * @memberof Login
-   * @param {Object} dataToLogin
-   * Handles login event.
-   * Validates login credentials.
+   * @param {Object} dataToLogin Login Credentials.
+   * @returns {boolean} Boolean value.
    */
   handleLogin = dataToLogin => {
     const dataAtLocalStorage = JSON.parse(
@@ -75,8 +71,9 @@ class AppRouter extends React.Component {
   };
 
   /**
-   * @param {Object} dataToBeStored
+   * @param {*} dataToBeStored
    * @memberof AppRouter
+   * @returns Boolean value.
    * Sets signup data to localstorage.
    */
   handleSignup = dataToBeStored => {
@@ -92,68 +89,69 @@ class AppRouter extends React.Component {
    * @memberof AppRouternewnews
    */
   render() {
-    const { isAuthenticated, isCommentPage } = this.state;
-
+    const { isAuthenticated } = this.state;
     return (
-      <Router>
-        <div>
-          {isAuthenticated ? (
-            <div className="header-container">
-              <Header />
-              <NavBar />
-            </div>
-          ) : (
-            <div />
-          )}
-          <Switch>
-            <Route
-              path={ROUTES.LOGINSIGNUP}
-              exact
-              component={props => (
-                <Login
-                  {...props}
-                  errors={this.state.errors}
-                  handleLogin={this.handleLogin}
-                  handleSignup={this.handleSignup}
-                  isAuthenticated={this.state.isAuthenticated}
-                />
-              )}
-            />
-            <Route
-              path={ROUTES.NEWNEWSSTORIES}
-              exact
-              component={props => (
-                <Home {...props} isAuthenticated={this.state.isAuthenticated} />
-              )}
-            />
-            <Route
-              path={ROUTES.TOPNEWSSTORIES}
-              exact
-              component={props => (
-                <Home {...props} isAuthenticated={this.state.isAuthenticated} />
-              )}
-            />
-            <Route
-              path={ROUTES.BESTNEWSSTORIES}
-              exact
-              component={props => (
-                <Home {...props} isAuthenticated={this.state.isAuthenticated} />
-              )}
-            />
-            <Route
-              path={ROUTES.COMMENTS}
-              exact
-              component={props => (
-                <Comments
-                  {...props}
-                  isCommentPage={isCommentPage}
-                  goToPrevPage={this.goToPrevPage}
-                />
-              )}
-            />
-          </Switch>
-        </div>
-      </Router>
+      <AuthContext.Provider
+        value={{
+          errors: this.state.errors,
+          isAuthenticated: isAuthenticated,
+          handleLogin: this.handleLogin,
+          handleSignup: this.handleSignup
+        }}
+      >
+        <Router>
+          <div>
+            {isAuthenticated ? (
+              <div className="header-container">
+                <Header />
+                <NavBar />
+              </div>
+            ) : (
+              <div />
+            )}
+            <Switch>
+              <Route
+                path={ROUTES.LOGINSIGNUP}
+                exact
+                component={props => <Login {...props} />}
+              />
+              <Route
+                path={ROUTES.NEWNEWSSTORIES}
+                exact
+                component={props => <Home {...props} />}
+              />
+              <Route
+                path={ROUTES.TOPNEWSSTORIES}
+                exact
+                component={props => (
+                  <Home
+                    {...props}
+                    isAuthenticated={this.state.isAuthenticated}
+                  />
+                )}
+              />
+              <Route
+                path={ROUTES.BESTNEWSSTORIES}
+                exact
+                component={props => (
+                  <Home
+                    {...props}
+                    isAuthenticated={this.state.isAuthenticated}
+                  />
+                )}
+              />
+              <Route
+                path={ROUTES.COMMENTS}
+                exact
+                component={props => (
+                  <Comments {...props} goToPrevPage={this.goToPrevPage} />
+                )}
+              />
+            </Switch>
+          </div>
+        </Router>
+        >
+      </AuthContext.Provider>
     );
   }
 }
