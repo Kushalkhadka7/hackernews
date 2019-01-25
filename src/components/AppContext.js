@@ -5,6 +5,7 @@ import React from 'react';
  */
 export const AppContext = React.createContext({
   errors: '',
+  success: '',
   isAuthenticated: false,
   /** Handles Login in the app.*/
   handleLogin() {},

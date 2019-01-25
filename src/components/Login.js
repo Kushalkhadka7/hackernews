@@ -58,7 +58,7 @@ class Login extends React.Component {
    */
   render() {
     const stateErrors = this.state.errors;
-    const { isAuthenticated, errors } = this.context;
+    const { isAuthenticated, errors, success } = this.context;
 
     return (
       <React.Fragment>
@@ -110,7 +110,9 @@ class Login extends React.Component {
                   />
                 </div>
               </form>
-              <div className="invalid errors">{stateErrors || errors}</div>
+              <div className="invalid errors">
+                {stateErrors || errors || success}
+              </div>
             </div>
           </div>
         )}

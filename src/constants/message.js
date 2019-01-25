@@ -13,3 +13,7 @@ export const ERRORS = {
   COMMENTS_NOT_FOUND: 'no comments to display',
   CHILD_COMMENTS_NOT_FOUND: 'no commentsChilds to display'
 };
+
+export const SIGNUP_SUCCESS = {
+  SIGNUP_SUCCESS_MESSAGE: 'You have sign up now you can login.'
+};

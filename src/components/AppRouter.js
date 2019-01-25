@@ -11,6 +11,7 @@ import NotFound from './NotFound';
 import ROUTES from '../constants/routes';
 import { AppContext } from './AppContext';
 import { LOGIN_ERRORS } from '../constants/message';
+import { SIGNUP_SUCCESS } from '../constants/message';
 import { LOGIN_CREDENTIALS } from '../constants/localStorage';
 import { IS_AUTHENTICATED } from '../constants/sessionStorage';
 
@@ -28,6 +29,7 @@ class AppRouter extends React.Component {
     super(props);
     this.state = {
       errors: '',
+      success: '',
       isAuthenticated: false
     };
   }
@@ -81,6 +83,9 @@ class AppRouter extends React.Component {
   handleSignup = loginData => {
     if (loginData) {
       localStorage.setItem(LOGIN_CREDENTIALS, JSON.stringify(loginData));
+      this.setState({
+        success: SIGNUP_SUCCESS.SIGNUP_SUCCESS_MESSAGE
+      });
 
       return true;
     }
@@ -98,12 +103,13 @@ class AppRouter extends React.Component {
    * @returns {boolean} React Router.
    */
   render() {
-    const { isAuthenticated, errors } = this.state;
+    const { isAuthenticated, errors, success } = this.state;
 
     return (
       <AppContext.Provider
         value={{
           errors: errors,
+          success: success,
           isAuthenticated: isAuthenticated,
           handleLogin: this.handleLogin,
           handleSignup: this.handleSignup,
