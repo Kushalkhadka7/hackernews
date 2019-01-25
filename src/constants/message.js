@@ -8,3 +8,8 @@ export const LOGIN_ERRORS = {
 export const NOT_FOUND_ERRORS = {
   ROUTE_NOT_FOUND: '404 not found'
 };
+
+export const ERRORS = {
+  COMMENTS_NOT_FOUND: 'no comments to display',
+  CHILD_COMMENTS_NOT_FOUND: 'no commentsChilds to display'
+};

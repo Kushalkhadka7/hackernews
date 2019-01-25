@@ -1,13 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
+import { AppContext } from './AppContext';
+import { ERRORS } from '../constants/message';
 import CommentsChilds from './CommentsChilds';
-import * as services from '../services/hackerNews';
+import Redirect from 'react-router-dom/Redirect';
 
 /**
  * @class Comments
  * @augments {Component}
  */
 class Comments extends React.Component {
+  static contextType = AppContext;
   /**
    * Creates an instance of Comments.
    *
@@ -18,60 +22,44 @@ class Comments extends React.Component {
     super(props);
     this.state = {
       errors: '',
-      comments: []
+      comments: [],
+      newsType: 'comments'
     };
-    this.newsType = 'comments';
   }
 
   /**
-   * Api call here.
-   */
-  componentDidMount() {
-    const { kids } = this.props.history.location.state.data.news;
-
-    if (kids) {
-      kids.forEach(kid => {
-        services
-          .getNews(this.newsType, null, kid)
-          .then(({ data }) =>
-            this.setState({
-              comments: [...this.state.comments, data]
-            })
-          )
-          .catch(error => error);
-      });
-    } else {
-      this.setState({ errors: 'no comments to display' });
-    }
-  }
-
-  /**
-   * Render comments.
+   * @returns {number} Comments.
    */
   render() {
-    const { comments, errors } = this.state;
+    const { isAuthenticated } = this.context;
+    const kidsNewsId = this.props.history
+      ? this.props.history.location.state.data.news.kids
+      : this.props.data;
 
     return (
       <React.Fragment>
-        <div className="container local-container list-container">
-          {comments.length !== 0 ? (
-            <ul>
-              {comments.map(data => (
-                <CommentsChilds data={data} key={data.id} />
-              ))}
-            </ul>
-          ) : (
-            <React.Fragment>
-              {errors}
-              <div className="progress progress-bar">
-                <div className="indeterminate" />
-              </div>
-            </React.Fragment>
-          )}
-        </div>
+        {isAuthenticated ? (
+          <div className="container local-container list-container">
+            {kidsNewsId ? (
+              <ul>
+                {kidsNewsId.map(data => (
+                  <CommentsChilds data={data} key={data.id} />
+                ))}
+              </ul>
+            ) : (
+              <div>{ERRORS.COMMENTS_NOT_FOUND}</div>
+            )}
+          </div>
+        ) : (
+          <Redirect to="/login" />
+        )}
       </React.Fragment>
     );
   }
 }
+
+Comments.porpTypes = {
+  props: PropTypes.object.isRequired
+};
 
 export default Comments;

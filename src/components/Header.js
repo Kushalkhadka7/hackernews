@@ -1,10 +1,29 @@
 import React from 'react';
 
+import { AppContext } from './AppContext';
+
 /**
- * Title of the app.
+ * @returns {number} Header title.
  */
-const Header = () => (
-  <div className="container app-header local-container">Hacker News</div>
-);
+class Header extends React.Component {
+  static contextType = AppContext;
+
+  /**
+   * @memberof Header
+   * @returns {string} Header.
+   */
+  render() {
+    const { handleLogout } = this.context;
+
+    return (
+      <div className="container app-header local-container clearfix">
+        <span className="header">Hacker News</span>
+        <span className="logout" onClick={handleLogout}>
+          <i className="fas fa-sign-out-alt" />
+        </span>
+      </div>
+    );
+  }
+}
 
 export default Header;

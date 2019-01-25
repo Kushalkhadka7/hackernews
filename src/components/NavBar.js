@@ -19,7 +19,8 @@ const navigationLinks = [
 ];
 
 /**
- * Returns nav component.
+ * @memberof Navbar
+ * @returns {number} Nav component.
  */
 const NavBar = () => (
   <div className="container local-container">
@@ -28,7 +29,8 @@ const NavBar = () => (
         <ul className="tabs tabs-transparent">
           {navigationLinks.map(navigationLink => (
             <NavLink
-              activeClassName="active"
+              exact
+              activeClassName="activeNavBar"
               className="tab nav-tabs"
               to={navigationLink.to}
               key={navigationLink.to}

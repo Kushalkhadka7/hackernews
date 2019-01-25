@@ -5,7 +5,7 @@
     "mocha": true,
     "browser": true
   },
-  "extends": ["eslint:recommended", "eslint-config-leapfrog/react"],
+  "extends": ["eslint:recommended", "eslint-config-leapfrog"],
   "plugins": ["react"],
   "parser": "babel-eslint",
   "parserOptions": {
@@ -40,12 +40,6 @@
       "error",
       {
         "properties": "never"
-      }
-    ],
-    "padded-blocks": [
-      "error",
-      {
-        "classes": "always"
       }
     ],
     "comma-spacing": [

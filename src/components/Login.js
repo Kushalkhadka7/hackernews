@@ -1,10 +1,10 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 
-import { AuthContext } from './AuthContext';
-
 import ROUTES from '../constants/routes';
+import { AppContext } from './AppContext';
 import { LOGIN_ERRORS } from '../constants/message';
+
 /**
  * @class Login
  * @extends {React.Component}
@@ -12,7 +12,7 @@ import { LOGIN_ERRORS } from '../constants/message';
  * @param {Object} event
  */
 class Login extends React.Component {
-  static contextType = AuthContext;
+  static contextType = AppContext;
   /**
    * @param {*} props
    */
@@ -41,7 +41,7 @@ class Login extends React.Component {
     event.preventDefault();
     const { userName, password } = this.state;
 
-    if (userName !== '' && password !== '') {
+    if (userName && password) {
       const loginData = { userName: userName, password: password };
 
       event.target.name === 'signup'
@@ -53,8 +53,8 @@ class Login extends React.Component {
   };
 
   /**
-   * Render Login-SignUp form.
-   * Displays Login-SignUp errors.
+   * @memberof Login
+   * @returns {number} Jsx to disply login-signup form.
    */
   render() {
     const stateErrors = this.state.errors;

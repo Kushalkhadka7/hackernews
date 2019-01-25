@@ -1,38 +1,58 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Redirect, Link } from 'react-router-dom';
+
+import { AppContext } from './AppContext';
 
 /**
  * @class News
  * @extends {Component}
  */
 class News extends React.PureComponent {
+  static contextType = AppContext;
   /**
-   * @returns Render News to dom.
    * @memberof News
+   * @returns {number}
    */
   render() {
-    const { news, isAuthenticated } = this.props;
+    const { news } = this.props;
+    const { isAuthenticated } = this.context;
 
     return (
       <React.Fragment>
         {isAuthenticated ? (
           <React.Fragment>
             {news ? (
-              <Link
-                to={{
-                  pathname: `/news/${news.id}`,
-                  state: { data: this.props, isAuthenticated: isAuthenticated }
-                }}
-              >
-                <li>
-                  <div className="card each-list">
-                    {news.title}
-                    <p className="created-date ">
+              <li>
+                <div className="card each-list">
+                  <div
+                    className="news-content"
+                    onClick={() => (window.location.href = news.url)}
+                  >
+                    <div className="newsAuthor">
+                      author:<span className="authorName"> {news.by}</span>
+                    </div>
+                    <span className="newsSpan">{news.title}</span>
+                    <span className="created-date ">
                       createdAt: {new Date(news.time).toLocaleString()}
-                    </p>
+                    </span>
                   </div>
-                </li>
-              </Link>
+                  <div className="link-to-comments clearfix">
+                    <Link
+                      to={{
+                        pathname: `/news/${news.id}`,
+                        state: {
+                          data: this.props,
+                          isAuthenticated: isAuthenticated
+                        }
+                      }}
+                    >
+                      comments
+                      <span className="new badge blue">{news.kids.length}</span>
+                    </Link>
+                  </div>
+                </div>
+              </li>
             ) : (
               <div className="progress progress-bar">
                 <div className="indeterminate" />
@@ -46,5 +66,10 @@ class News extends React.PureComponent {
     );
   }
 }
+
+News.porpTypes = {
+  news: PropTypes.object.isRequired,
+  isAuthenticated: PropTypes.bool.isRequired
+};
 
 export default News;

@@ -1,4 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
+import Comments from './Comments';
+import { AppContext } from './AppContext';
+import Redirect from 'react-router/Redirect';
+import { ERRORS } from '../constants/message';
 import * as services from '../services/hackerNews';
 
 /**
@@ -6,6 +12,7 @@ import * as services from '../services/hackerNews';
  * @augments {Component}
  */
 class CommentsChilds extends React.Component {
+  static contextType = AppContext;
   /**
    * Creates an instance of Comments.
    *
@@ -14,8 +21,7 @@ class CommentsChilds extends React.Component {
    */
   constructor(props) {
     super(props);
-    this.state = { commentsChilds: [] };
-    this.newsType = 'comments';
+    this.state = { commentsChild: null, newsType: 'comments' };
   }
 
   /**
@@ -24,54 +30,75 @@ class CommentsChilds extends React.Component {
    * Sets those childrens in state.
    */
   componentDidMount = () => {
-    const { kids } = this.props.data;
+    const kidsNews = this.props.data;
 
-    if (kids) {
-      kids.forEach(kid => {
-        services
-          .getNews(this.newsType, kid)
-          .then(data =>
-            this.setState({
-              commentsChilds: [...this.state.commentsChilds, data.data]
-            })
-          )
-          .catch(error => error);
-      });
+    if (kidsNews) {
+      services
+        .getNews(this.state.newsType, kidsNews)
+        .then(({ data }) =>
+          this.setState({
+            ...this.state.commentsChild,
+            commentsChild: data
+          })
+        )
+        .catch(error => error);
     } else {
-      this.setState({ errors: 'no commentsChilds to display' });
+      this.setState({ errors: ERRORS.CHILD_COMMENTS_NOT_FOUND });
     }
   };
 
   /**
-   * @returns
-   * @memberof commentsChilds
+   * @returns {jsx} Jsx to display comments.
    */
   render() {
-    const { data } = this.props;
+    const { commentsChild } = this.state;
+    const { isAuthenticated } = this.context;
 
     return (
-      <div>
-        <li className="comment-list" key={data.id}>
-          {data.text}
-          <p className="created-date">
-            {' '}
-            createdAt: {new Date(data.time).toLocaleString()}
-          </p>
-        </li>
-        {this.state.commentsChilds ? (
-          this.state.commentsChilds.map(value => (
-            <div className="child-comment" key={value.id}>
-              <CommentsChilds data={value} key={value.id} />
+      <React.Fragment>
+        {isAuthenticated ? (
+          commentsChild ? (
+            <div>
+              <li className="comment-list" key={commentsChild.id}>
+                <div className="newsAuthor">
+                  author:<span className="authorName"> {commentsChild.by}</span>
+                </div>
+                <span className="newsSpan">{commentsChild.text}</span>
+                <span className="created-date ">
+                  createdAt: {new Date(commentsChild.time).toLocaleString()}
+                </span>
+                <div className="child-comment">
+                  <Comments data={commentsChild.kids} />
+                </div>
+              </li>
             </div>
-          ))
+          ) : (
+            <div className="loader">
+              <div className="preloader-wrapper active">
+                <div className="spinner-layer spinner-red-only">
+                  <div className="circle-clipper left">
+                    <div className="circle" />
+                  </div>
+                  <div className="gap-patch">
+                    <div className="circle" />
+                  </div>
+                  <div className="circle-clipper right">
+                    <div className="circle" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
         ) : (
-          <div className="progress progress-bar">
-            <div className="indeterminate" />
-          </div>
+          <Redirect to="/login" />
         )}
-      </div>
+      </React.Fragment>
     );
   }
 }
+
+CommentsChilds.porpTypes = {
+  commentsChild: PropTypes.object.isRequired
+};
 
 export default CommentsChilds;
