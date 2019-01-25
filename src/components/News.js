@@ -53,7 +53,7 @@ class News extends React.PureComponent {
                           {news.kids.length}
                         </span>
                       ) : (
-                        <span />
+                        <span className="new badge blue">0</span>
                       )}
                     </Link>
                   </div>
