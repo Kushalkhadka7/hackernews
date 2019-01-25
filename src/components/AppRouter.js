@@ -116,7 +116,7 @@ class AppRouter extends React.Component {
           handleLogout: this.handleLogout
         }}
       >
-        <Router>
+        <Router basename={'/hackernews'}>
           <div>
             {isAuthenticated && (
               <div className="header-container">
