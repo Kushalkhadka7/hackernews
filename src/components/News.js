@@ -48,7 +48,13 @@ class News extends React.PureComponent {
                       }}
                     >
                       comments
-                      <span className="new badge blue">{news.kids.length}</span>
+                      {news.kids ? (
+                        <span className="new badge blue">
+                          {news.kids.length}
+                        </span>
+                      ) : (
+                        <span />
+                      )}
                     </Link>
                   </div>
                 </div>
