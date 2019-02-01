@@ -64,10 +64,6 @@ span {
   transform: translateX(-50%);
 }
 
-.child-comment {
-  padding: 0 15px;
-}
-
 .list-container .progress-bar {
   width: 70%;
   margin: 0 auto;
@@ -203,7 +199,7 @@ span {
 .comment-list {
   color: #3c3c3c;
   margin: 0 5px;
-  padding: 15px;
+  padding: 15px 5px;
   overflow: hidden;
   background-color: #fbfbfb;
   border-bottom: 1px solid #ccc;

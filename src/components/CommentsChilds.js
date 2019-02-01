@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Redirect } from 'react-router-dom';
 
 import Comments from './Comments';
 import { AppContext } from './AppContext';
-import Redirect from 'react-router/Redirect';
+import NEWSTYPE from '../constants/newsType';
 import { ERRORS } from '../constants/message';
-import * as services from '../services/hackerNews';
+import * as hackerNewsServices from '../services/hackerNews';
 
 /**
  * @class Comments
@@ -21,7 +22,7 @@ class CommentsChilds extends React.Component {
    */
   constructor(props) {
     super(props);
-    this.state = { commentsChild: null, newsType: 'comments' };
+    this.state = { commentsChild: null, newsType: NEWSTYPE.COMMENTS };
   }
 
   /**
@@ -33,7 +34,7 @@ class CommentsChilds extends React.Component {
     const kidsNews = this.props.data;
 
     if (kidsNews) {
-      services
+      hackerNewsServices
         .getNews(this.state.newsType, kidsNews)
         .then(({ data }) =>
           this.setState({

@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Redirect } from 'react-router-dom';
 
+import ROUTES from '../constants/routes';
 import { AppContext } from './AppContext';
 import { ERRORS } from '../constants/message';
 import CommentsChilds from './CommentsChilds';
-import Redirect from 'react-router-dom/Redirect';
 
 /**
  * @class Comments
@@ -51,7 +52,7 @@ class Comments extends React.Component {
             )}
           </div>
         ) : (
-          <Redirect to="/login" />
+          <Redirect to={ROUTES.LOGINSIGNUP} />
         )}
       </React.Fragment>
     );

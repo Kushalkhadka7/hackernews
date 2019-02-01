@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Redirect, Link } from 'react-router-dom';
 
 import { AppContext } from './AppContext';
+import ROUTES from '../constants/routes';
 
 /**
  * @class News
@@ -40,7 +41,7 @@ class News extends React.PureComponent {
                   <div className="link-to-comments clearfix">
                     <Link
                       to={{
-                        pathname: `/news/${news.id}`,
+                        pathname: `${ROUTES.NEWS}/${news.id}`,
                         state: {
                           data: this.props,
                           isAuthenticated: isAuthenticated
@@ -66,7 +67,7 @@ class News extends React.PureComponent {
             )}
           </React.Fragment>
         ) : (
-          <Redirect to="/login" />
+          <Redirect to={ROUTES.LOGINSIGNUP} />
         )}
       </React.Fragment>
     );

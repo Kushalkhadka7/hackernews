@@ -40,9 +40,20 @@ class AppRouter extends React.Component {
    * @returns {number} The sum of the two numbers.
    */
   static getDerivedStateFromProps(props, state) {
+    /**
+     * @returns {Boolean}
+     */
+    const isAuthenticated = () => {
+      try {
+        return JSON.parse(sessionStorage.getItem(IS_AUTHENTICATED));
+      } catch (e) {
+        return false;
+      }
+    };
+
     return {
       ...state,
-      isAuthenticated: sessionStorage.getItem(IS_AUTHENTICATED) === 'true'
+      isAuthenticated: isAuthenticated()
     };
   }
 
@@ -96,7 +107,7 @@ class AppRouter extends React.Component {
    */
   handleLogout = () => {
     this.setState({ isAuthenticated: false });
-    sessionStorage.setItem('isAuthenticated', false);
+    sessionStorage.setItem(IS_AUTHENTICATED, false);
   };
 
   /**
@@ -116,7 +127,7 @@ class AppRouter extends React.Component {
           handleLogout: this.handleLogout
         }}
       >
-        <Router basename={'/hackernews'}>
+        <Router basename={ROUTES.HACKERNEWS}>
           <div>
             {isAuthenticated && (
               <div className="header-container">
@@ -126,14 +137,15 @@ class AppRouter extends React.Component {
             )}
             <Switch>
               <Route
-                path={ROUTES.LOGINSIGNUP}
-                exact
-                component={props => <Login {...props} />}
-              />
-              <Route
                 path={ROUTES.NEWNEWSSTORIES}
                 exact
                 component={props => <Home {...props} />}
+              />
+              <Route
+                path={ROUTES.LOGINSIGNUP}
+                x
+                exact
+                component={props => <Login {...props} />}
               />
               <Route
                 path={ROUTES.TOPNEWSSTORIES}

@@ -4,7 +4,8 @@ import { Redirect } from 'react-router-dom';
 import News from './News';
 import ROUTES from '../constants/routes';
 import { AppContext } from './AppContext';
-import * as services from '../services/hackerNews';
+import NEWSTYPE from '../constants/newsType';
+import * as hackerNewsServices from '../services/hackerNews';
 
 /**
  * @class Home
@@ -49,7 +50,9 @@ class Home extends React.PureComponent {
     this.setState({ newsType, isLoading: true });
 
     if (this.state.isLoading) {
-      const newsStoriesIds = await services.getNews(this.state.newsType);
+      const newsStoriesIds = await hackerNewsServices.getNews(
+        this.state.newsType
+      );
       const maxNewsItems = newsStoriesIds.length / 10;
 
       this.setState({ newsStoriesIds, maxNewsItems });
@@ -76,7 +79,7 @@ class Home extends React.PureComponent {
       i < initialRenderState + newsPerPage;
       i++
     ) {
-      const newsData = services.getNews(
+      const newsData = hackerNewsServices.getNews(
         this.state.newsType,
         this.state.newsStoriesIds[i]
       );
@@ -101,13 +104,13 @@ class Home extends React.PureComponent {
 
     switch (pathname) {
       case ROUTES.NEWNEWSSTORIES:
-        return 'newnews';
+        return NEWSTYPE.NEWNEWS;
       case ROUTES.TOPNEWSSTORIES:
-        return 'topnews';
+        return NEWSTYPE.TOPNEWS;
       case ROUTES.BESTNEWSSTORIES:
-        return 'bestnews';
+        return NEWSTYPE.BESTNEWS;
       default:
-        return 'newnews';
+        return NEWSTYPE.NEWNEWS;
     }
   };
 
@@ -161,14 +164,14 @@ class Home extends React.PureComponent {
             </div>
             <div className="news-pagination">
               <button
-                disabled={currentPage === 0 || currentPage < 0 ? true : false}
+                disabled={currentPage <= 0}
                 onClick={() => this.handleUpdate(goToPreviousPage)}
                 className="btn-floating btn-large waves-effect waves-light previous-page"
               >
                 <i className="fas fa-chevron-left" />
               </button>
               <button
-                disabled={currentPage >= maxNewsItems - 1 ? true : false}
+                disabled={currentPage >= maxNewsItems - 1}
                 onClick={() => this.handleUpdate(goToNextPage)}
                 className="btn-floating btn-large waves-effect waves-light next-page"
               >
