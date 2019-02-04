@@ -3,36 +3,31 @@ import API from '../constants/api';
 
 /**
  * @param {String} newsType
+ * @param {Number} newsId
  * @param {Number} commentId
  * Fetch news data from the api.
  */
-export async function getNews(newsType, commentId) {
-  if (!commentId) {
-    const filteredNewsType = matchNewsTypeToUrl(newsType);
+export async function getNews(newsType, newsId, commentId) {
+  const filteredNewsType = matchNewsTypeToUrl(newsType);
+
+  if (!newsId && !commentId) {
     const apiData = await http.get(filteredNewsType);
 
     return apiData.data;
-  } else {
-    const apiData = await http.get(`/item/${commentId}.json`);
+  } else if (newsId && !commentId) {
+    const apiData = await http.get(`/item/${newsId}.json`);
 
     return apiData;
+  } else if (!newsId && commentId) {
+    const newsData = await http.get(`${API.COMMENTS}/${commentId}.json`);
+
+    return Promise.resolve(newsData);
   }
 }
 
 /**
- * @param {*} newsType
- * @param {*} commentId
- * Fetch comments for specific news.
- */
-export async function getComments(newsType, commentId) {
-  const filteredNewsType = matchNewsTypeToUrl(newsType);
-  const newsData = await http.get(`${filteredNewsType}/${commentId}.json`);
-
-  return Promise.resolve(newsData);
-}
-
-/**
- * @param {String} newsType
+ * @param {String}newsType
+ * @returns {number} News type.
  */
 const matchNewsTypeToUrl = newsType => {
   switch (newsType) {

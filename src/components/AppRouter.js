@@ -3,36 +3,63 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import Home from './Home';
 import Login from './Login';
-import Header from './Header';
 import NavBar from './NavBar';
+import Header from './Header';
 import '../assets/css/App.css';
-import SingelNews from './SingleNews';
+import Comments from './Comments';
+import NotFound from './NotFound';
 import ROUTES from '../constants/routes';
-import LOGIN_CREDENTIALS from '../constants/localStorage';
+import { AppContext } from './AppContext';
 import { LOGIN_ERRORS } from '../constants/message';
+import { SIGNUP_SUCCESS } from '../constants/message';
+import { LOGIN_CREDENTIALS } from '../constants/localStorage';
+import { IS_AUTHENTICATED } from '../constants/sessionStorage';
 
 /**
- * Handles routing in app.
+ * @class AppRouter
+ * @augments {React.Component}
  */
 class AppRouter extends React.Component {
   /**
    * Creates an instance of AppRouter.
    *
-   * @param {*} props
-   * @memberof AppRouter
+   * @param {any} props
    */
   constructor(props) {
     super(props);
     this.state = {
       errors: '',
-      isAuthenticated: JSON.parse(sessionStorage.getItem('isLoggedIn'))
+      success: '',
+      isAuthenticated: false
     };
   }
+
   /**
-   * @memberof Login
-   * @param {Object} loginData
-   * Handles login event.
-   * Validates login credentials.
+   * @param {*} props Data from parent component.
+   * @param {*} state Current state of the component.
+   * @returns {number} The sum of the two numbers.
+   */
+  static getDerivedStateFromProps(props, state) {
+    /**
+     * @returns {Boolean}
+     */
+    const isAuthenticated = () => {
+      try {
+        return JSON.parse(sessionStorage.getItem(IS_AUTHENTICATED));
+      } catch (e) {
+        return false;
+      }
+    };
+
+    return {
+      ...state,
+      isAuthenticated: isAuthenticated()
+    };
+  }
+
+  /**
+   * @param {Object} loginData Data from Login component.
+   * @returns {boolean} Boolean that indicates either logged in or not.
    */
   handleLogin = loginData => {
     const loginCredentials = JSON.parse(
@@ -53,7 +80,7 @@ class AppRouter extends React.Component {
         loginCredentials.password === loginData.password
       ) {
         this.setState({ isAuthenticated: true });
-        sessionStorage.setItem('isLoggedIn', true);
+        sessionStorage.setItem(IS_AUTHENTICATED, true);
 
         return true;
       }
@@ -61,78 +88,85 @@ class AppRouter extends React.Component {
   };
 
   /**
-   * @param {Object} loginData
-   * @memberof AppRouter
-   * Sets signup data to localstorage.
+   * @param {Object} loginData Data from Login component.
+   * @returns {boolean} Boolean that indicates either signin or not.
    */
   handleSignup = loginData => {
     if (loginData) {
       localStorage.setItem(LOGIN_CREDENTIALS, JSON.stringify(loginData));
+      this.setState({
+        success: SIGNUP_SUCCESS.SIGNUP_SUCCESS_MESSAGE
+      });
 
       return true;
     }
   };
 
   /**
-   * @returns Routes that are used in the app.
-   * @memberof AppRouternewnews
+   * Handles logout function in app.
+   */
+  handleLogout = () => {
+    this.setState({ isAuthenticated: false });
+    sessionStorage.setItem(IS_AUTHENTICATED, false);
+  };
+
+  /**
+   * @returns {boolean} React Router.
    */
   render() {
-    const { isAuthenticated, errors } = this.state;
+    const { isAuthenticated, errors, success } = this.state;
 
     return (
-      <Router>
-        <div>
-          {isAuthenticated && (
-            <React.Fragment>
-              <Header />
-              <NavBar />
-            </React.Fragment>
-          )}
-          ;
-          <Switch>
-            <Route
-              path={ROUTES.LOGINSIGNUP}
-              exact
-              component={props => (
-                <Login
-                  {...props}
-                  errors={errors}
-                  handleLogin={this.handleLogin}
-                  handleSignup={this.handleSignup}
-                  isAuthenticated={isAuthenticated}
-                />
-              )}
-            />
-            <Route
-              path={ROUTES.NEWNEWSSTORIES}
-              exact
-              component={props => (
-                <Home {...props} isAuthenticated={isAuthenticated} />
-              )}
-            />
-            <Route
-              path={ROUTES.TOPNEWSSTORIES}
-              exact
-              component={props => (
-                <Home {...props} isAuthenticated={isAuthenticated} />
-              )}
-            />
-            <Route
-              path={ROUTES.BESTNEWSSTORIES}
-              exact
-              component={props => (
-                <Home {...props} isAuthenticated={isAuthenticated} />
-              )}
-            />
-            <Route
-              path={ROUTES.COMMENTS}
-              exact
-              component={props => <SingelNews {...props} />}
-            />
-          </Switch>
-        </div>
-      </Router>
+      <AppContext.Provider
+        value={{
+          errors: errors,
+          success: success,
+          isAuthenticated: isAuthenticated,
+          handleLogin: this.handleLogin,
+          handleSignup: this.handleSignup,
+          handleLogout: this.handleLogout
+        }}
+      >
+        <Router basename={ROUTES.HACKERNEWS}>
+          <div>
+            {isAuthenticated && (
+              <div className="header-container">
+                <Header />
+                <NavBar />
+              </div>
+            )}
+            <Switch>
+              <Route
+                path={ROUTES.NEWNEWSSTORIES}
+                exact
+                component={props => <Home {...props} />}
+              />
+              <Route
+                path={ROUTES.LOGINSIGNUP}
+                x
+                exact
+                component={props => <Login {...props} />}
+              />
+              <Route
+                path={ROUTES.TOPNEWSSTORIES}
+                exact
+                component={props => <Home {...props} />}
+              />
+              <Route
+                path={ROUTES.BESTNEWSSTORIES}
+                exact
+                component={props => <Home {...props} />}
+              />
+              <Route
+                path={ROUTES.COMMENTS}
+                exact
+                component={props => <Comments {...props} />}
+              />
+              <Route component={props => <NotFound {...props} />} />
+            </Switch>
+          </div>
+        </Router>
+      </AppContext.Provider>
     );
   }
 }

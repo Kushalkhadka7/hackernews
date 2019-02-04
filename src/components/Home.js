@@ -3,13 +3,16 @@ import { Redirect } from 'react-router-dom';
 
 import News from './News';
 import ROUTES from '../constants/routes';
-import * as services from '../services/hackerNews';
+import { AppContext } from './AppContext';
+import NEWSTYPE from '../constants/newsType';
+import * as hackerNewsServices from '../services/hackerNews';
 
 /**
  * @class Home
  * @extends {React.PureComponent}
  */
 class Home extends React.PureComponent {
+  static contextType = AppContext;
   /**
    * @param {*} props
    */
@@ -17,13 +20,14 @@ class Home extends React.PureComponent {
     super(props);
     this.state = {
       newsType: '',
-      NEXT_PAGE: 1,
       currentPage: 0,
       newsStories: [],
+      goToNextPage: 1,
+      maxNewsItems: 0,
+      newsPerPage: 10,
       isLoading: false,
-      NEWS_PER_PAGE: 10,
-      PREVIOUS_PAGE: -1,
-      newsStoriesIds: []
+      newsStoriesIds: [],
+      goToPreviousPage: -1
     };
   }
 
@@ -46,9 +50,12 @@ class Home extends React.PureComponent {
     this.setState({ newsType, isLoading: true });
 
     if (this.state.isLoading) {
-      const newsStoriesIds = await services.getNews(this.state.newsType);
+      const newsStoriesIds = await hackerNewsServices.getNews(
+        this.state.newsType
+      );
+      const maxNewsItems = newsStoriesIds.length / 10;
 
-      this.setState({ newsStoriesIds });
+      this.setState({ newsStoriesIds, maxNewsItems });
       this.loadNewsFromIds();
     }
   };
@@ -60,19 +67,19 @@ class Home extends React.PureComponent {
    * @memberof Home
    */
   loadNewsFromIds = () => {
-    const { NEWS_PER_PAGE, currentPage } = this.state;
+    const { newsPerPage, currentPage } = this.state;
 
     this.setState({
       newsStories: []
     });
-    const initialRenderState = currentPage * NEWS_PER_PAGE;
+    const initialRenderState = currentPage * newsPerPage;
 
     for (
       let i = initialRenderState;
-      i < initialRenderState + NEWS_PER_PAGE;
+      i < initialRenderState + newsPerPage;
       i++
     ) {
-      const newsData = services.getNews(
+      const newsData = hackerNewsServices.getNews(
         this.state.newsType,
         this.state.newsStoriesIds[i]
       );
@@ -88,28 +95,28 @@ class Home extends React.PureComponent {
   };
 
   /**
-   * Checks which route is currently active.
-   * Based on the router pathname variable.
-   *
    * @memberof Home
+   * @returns {string} News type .
+   * Checks news type based on the incoming routes.
    */
   checkRoutes = () => {
     const { pathname } = this.props.location;
 
     switch (pathname) {
       case ROUTES.NEWNEWSSTORIES:
-        return 'newnews';
+        return NEWSTYPE.NEWNEWS;
       case ROUTES.TOPNEWSSTORIES:
-        return 'topnews';
+        return NEWSTYPE.TOPNEWS;
       case ROUTES.BESTNEWSSTORIES:
-        return 'bestnews';
+        return NEWSTYPE.BESTNEWS;
       default:
-        return 'newnews';
+        return NEWSTYPE.NEWNEWS;
     }
   };
 
   /**
    * @memberof Home
+   * Stops fetching news data.
    */
   componentWillUnmount() {
     this.setState({ isLoading: false });
@@ -117,20 +124,26 @@ class Home extends React.PureComponent {
 
   /**
    * @memberof Home
-   * @param {Number} incrementFactor
+   * @param {Number} pageChange
    */
-  handleUpdatae = incrementFactor => {
-    this.setState({ currentPage: this.state.currentPage + incrementFactor });
+  handleUpdate = pageChange => {
+    this.setState({ currentPage: this.state.currentPage + pageChange });
     this.loadNewsFromIds();
   };
 
   /**
-   * @returns Jsx for New news stories.
-   * @memberof BestStories
+   * @memberof Home
+   * @returns {number} Jsx to display news.
    */
   render() {
-    const { newsStories, NEXT_PAGE, PREVIOUS_PAGE } = this.state;
-    const { isAuthenticated } = this.props;
+    const {
+      maxNewsItems,
+      newsStories,
+      goToNextPage,
+      goToPreviousPage,
+      currentPage
+    } = this.state;
+    const { isAuthenticated } = this.context;
 
     return (
       <React.Fragment>
@@ -151,14 +164,16 @@ class Home extends React.PureComponent {
             </div>
             <div className="news-pagination">
               <button
-                onClick={() => this.handleUpdatae(NEXT_PAGE)}
-                className="btn-floating btn-large waves-effect waves-light red previous-page"
+                disabled={currentPage <= 0}
+                onClick={() => this.handleUpdate(goToPreviousPage)}
+                className="btn-floating btn-large waves-effect waves-light previous-page"
               >
                 <i className="fas fa-chevron-left" />
               </button>
               <button
-                onClick={() => this.handleUpdatae(PREVIOUS_PAGE)}
-                className="btn-floating btn-large waves-effect waves-light red next-page"
+                disabled={currentPage >= maxNewsItems - 1}
+                onClick={() => this.handleUpdate(goToNextPage)}
+                className="btn-floating btn-large waves-effect waves-light next-page"
               >
                 <i className="fas fa-chevron-right" />
               </button>

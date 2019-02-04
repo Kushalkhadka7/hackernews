@@ -1,3 +1,1 @@
-export default {
-  LOGIN_CREDENTIALS: 'loginCredentials'
-};
+export const LOGIN_CREDENTIALS = 'loginCredentials';

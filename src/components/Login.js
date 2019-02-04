@@ -2,7 +2,9 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 
 import ROUTES from '../constants/routes';
+import { AppContext } from './AppContext';
 import { LOGIN_ERRORS } from '../constants/message';
+
 /**
  * @class Login
  * @extends {React.Component}
@@ -10,6 +12,7 @@ import { LOGIN_ERRORS } from '../constants/message';
  * @param {Object} event
  */
 class Login extends React.Component {
+  static contextType = AppContext;
   /**
    * @param {*} props
    */
@@ -38,24 +41,24 @@ class Login extends React.Component {
     event.preventDefault();
     const { userName, password } = this.state;
 
-    if (userName !== '' && password !== '') {
+    if (userName && password) {
       const loginData = { userName: userName, password: password };
 
       event.target.name === 'signup'
-        ? this.props.handleSignup(loginData)
-        : this.props.handleLogin(loginData);
+        ? this.context.handleSignup(loginData)
+        : this.context.handleLogin(loginData);
     } else {
       this.setState({ errors: LOGIN_ERRORS.EMPTY_INPUT_FIELDS });
     }
   };
 
   /**
-   * Render Login-SignUp form.
-   * Displays Login-SignUp errors.
+   * @memberof Login
+   * @returns {number} Jsx to disply login-signup form.
    */
   render() {
     const stateErrors = this.state.errors;
-    const { isAuthenticated, errors } = this.props;
+    const { isAuthenticated, errors, success } = this.context;
 
     return (
       <React.Fragment>
@@ -107,7 +110,9 @@ class Login extends React.Component {
                   />
                 </div>
               </form>
-              <div className="invalid errors"> {stateErrors || errors}</div>
+              <div className="invalid errors">
+                {stateErrors || errors || success}
+              </div>
             </div>
           </div>
         )}
